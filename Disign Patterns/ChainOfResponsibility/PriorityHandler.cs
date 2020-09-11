@@ -4,7 +4,20 @@ using SortLinkedList;
 
 namespace TemporaryProj.ChainOfResponsability{
     class PriorityHandler<T>{
-        protected LinkedList<Handler<T>> list;
+        public delegate void IfRequestProcessed(Handler<T> handler);
+        IfRequestProcessed notify;
+        
+        ///<summary>
+        ///Invokes if handler successfully processed request
+        ///</summary>
+        public event IfRequestProcessed NotifyIfSuccess{
+            add{
+                notify+=value;
+            }
+            remove{
+                notify-=value;
+            }
+        }
         public PriorityHandler()
         {
             list = new LinkedList<Handler<T>>();
@@ -14,9 +27,17 @@ namespace TemporaryProj.ChainOfResponsability{
             list.AddLast(handler);
         }
 
+        public bool RemoveHandler(Handler<T> handler){
+            return list.Remove(handler);
+        }
+
         public void Process(T request){
             ProcessNode(request,list.First);
         }
+        ///<summary>
+        ///Optimize the list of handlers by sorting them by the priority
+        ///The more often some Handler successfully process the request the more its priority is
+        ///</summary>
         protected void Optimize(){
             DoMergeSort.Sort(list,(Handler<T> t1, Handler<T> t2)=>
             t1.Priority-t2.Priority);
@@ -31,11 +52,13 @@ namespace TemporaryProj.ChainOfResponsability{
                 }
                 else{
                     node.Value.Priority++;
+                    notify?.Invoke(node.Value);
                     return;
                 }
             }
             Optimize();
         }
+        protected LinkedList<Handler<T>> list;
     }
 }
 /*
