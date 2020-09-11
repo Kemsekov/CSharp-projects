@@ -78,3 +78,35 @@ namespace SortLinkedList{
 
     }
 }
+/*
+Example of using
+
+static void Main(string[] args)
+        {
+            
+            Random rand = new Random();
+            LinkedList<char> list = new LinkedList<char>();
+
+            for(int a = 0; a<11; a++)
+            list.AddLast(Convert.ToChar(rand.Next(0,100)));
+
+            var res = DoMergeSort.Sort(list,(char a, char b)=>b-a);
+
+            foreach(var a in res)
+            System.Console.WriteLine(Convert.ToInt32(a));
+            
+        }
+------------------------------------------------
+Outputs:
+3
+5
+26
+27
+27
+44
+64
+64
+86
+86
+
+*/
