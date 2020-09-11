@@ -10,6 +10,8 @@ namespace TemporaryProj
 
         static void Main(string[] args)
         {
+            Intervals<int> i = new Intervals<int>();
+            
             Random rand = new Random();
             LinkedList<char> list = new LinkedList<char>();
 
