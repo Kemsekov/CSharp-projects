@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "7xBeYzY/TUOmxqMkDvS2XoC16JFqpc/KpZdwGARV28+OC2b6p5ZhgJyRy5II29S15cPAc2oJ6TQ66X2Z/FfYXg==",
+  "dgSpecHash": "7p74udo7wu5Qn5sqR7cHS8dXGy799tHfVWC4pmvW2jk4v0z1gyJAqotmxBJapxB5TN3ydOeHcubGgvUxhJz0jQ==",
   "success": true,
-  "projectFilePath": "/home/vlad/Programs/CSharp/TempProj/TempProj.csproj",
+  "projectFilePath": "/home/vlad/Programs/Git/CSharp-projects/TempProj.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

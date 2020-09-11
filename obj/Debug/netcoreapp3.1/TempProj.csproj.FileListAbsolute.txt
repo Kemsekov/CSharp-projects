@@ -37,3 +37,16 @@
 /home/vlad/Programs/CSharp/TempProj/obj/Debug/netcoreapp3.1/TempProj.dll
 /home/vlad/Programs/CSharp/TempProj/obj/Debug/netcoreapp3.1/TempProj.pdb
 /home/vlad/Programs/CSharp/TempProj/obj/Debug/netcoreapp3.1/TempProj.genruntimeconfig.cache
+/home/vlad/Programs/Git/CSharp-projects/bin/Debug/netcoreapp3.1/TempProj
+/home/vlad/Programs/Git/CSharp-projects/bin/Debug/netcoreapp3.1/TempProj.deps.json
+/home/vlad/Programs/Git/CSharp-projects/bin/Debug/netcoreapp3.1/TempProj.runtimeconfig.json
+/home/vlad/Programs/Git/CSharp-projects/bin/Debug/netcoreapp3.1/TempProj.runtimeconfig.dev.json
+/home/vlad/Programs/Git/CSharp-projects/bin/Debug/netcoreapp3.1/TempProj.dll
+/home/vlad/Programs/Git/CSharp-projects/bin/Debug/netcoreapp3.1/TempProj.pdb
+/home/vlad/Programs/Git/CSharp-projects/obj/Debug/netcoreapp3.1/TempProj.csprojAssemblyReference.cache
+/home/vlad/Programs/Git/CSharp-projects/obj/Debug/netcoreapp3.1/TempProj.AssemblyInfoInputs.cache
+/home/vlad/Programs/Git/CSharp-projects/obj/Debug/netcoreapp3.1/TempProj.AssemblyInfo.cs
+/home/vlad/Programs/Git/CSharp-projects/obj/Debug/netcoreapp3.1/TempProj.csproj.CoreCompileInputs.cache
+/home/vlad/Programs/Git/CSharp-projects/obj/Debug/netcoreapp3.1/TempProj.dll
+/home/vlad/Programs/Git/CSharp-projects/obj/Debug/netcoreapp3.1/TempProj.pdb
+/home/vlad/Programs/Git/CSharp-projects/obj/Debug/netcoreapp3.1/TempProj.genruntimeconfig.cache

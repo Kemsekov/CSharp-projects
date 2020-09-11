@@ -17,7 +17,7 @@ namespace TemporaryProj.ChainOfResponsability{
         public void Process(T request){
             ProcessNode(request,list.First);
         }
-        protected void Optimize(uint priority){
+        protected void Optimize(){
             DoMergeSort.Sort(list,(Handler<T> t1, Handler<T> t2)=>
             t1.Priority-t2.Priority);
         }
@@ -27,12 +27,14 @@ namespace TemporaryProj.ChainOfResponsability{
                 if(!node.Value.HandleRequest(request)){
                     node.Value.Priority--;
                     ProcessNode(request,node.Next);
+                    return;
                 }
                 else{
                     node.Value.Priority++;
+                    return;
                 }
             }
+            Optimize();
         }
-
     }
 }

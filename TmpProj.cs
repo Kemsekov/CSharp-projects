@@ -13,7 +13,7 @@ namespace TemporaryProj
             Random rand = new Random();
             LinkedList<char> list = new LinkedList<char>();
 
-            for(int a = 0; a<10; a++)
+            for(int a = 0; a<11; a++)
             list.AddLast(Convert.ToChar(rand.Next(0,100)));
 
             var res = DoMergeSort.Sort(list,(char a, char b)=>b-a);

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/home/vlad/Programs/CSharp/TempProj/TempProj.csproj": {}
+    "/home/vlad/Programs/Git/CSharp-projects/TempProj.csproj": {}
   },
   "projects": {
-    "/home/vlad/Programs/CSharp/TempProj/TempProj.csproj": {
+    "/home/vlad/Programs/Git/CSharp-projects/TempProj.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/vlad/Programs/CSharp/TempProj/TempProj.csproj",
+        "projectUniqueName": "/home/vlad/Programs/Git/CSharp-projects/TempProj.csproj",
         "projectName": "TempProj",
-        "projectPath": "/home/vlad/Programs/CSharp/TempProj/TempProj.csproj",
+        "projectPath": "/home/vlad/Programs/Git/CSharp-projects/TempProj.csproj",
         "packagesPath": "/home/vlad/.nuget/packages/",
-        "outputPath": "/home/vlad/Programs/CSharp/TempProj/obj/",
+        "outputPath": "/home/vlad/Programs/Git/CSharp-projects/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/vlad/.nuget/NuGet/NuGet.Config"
