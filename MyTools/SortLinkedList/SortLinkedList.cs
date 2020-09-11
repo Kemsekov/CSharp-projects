@@ -1,0 +1,80 @@
+using Adapter;
+using System.Collections.Generic;
+
+//In this tool i use CompareAdapter<T>, that allows me to compare types
+
+namespace SortLinkedList{
+    class DoMergeSort{
+    protected static (LinkedListNode<T>,int) MergeSort<T>(LinkedListNode<T> left_node,int Count,IComparer<T> cmp){
+
+                if(Count<=1)
+                return (left_node,Count);
+
+                int left_size = Count/2;
+                int right_size = Count-left_size;
+
+                LinkedListNode<T> right_node = left_node;
+
+                for(int co = right_size;co>1;co--){
+                    right_node = right_node.Next;
+                }
+                
+                var a = MergeSort(left_node,left_size,cmp);
+                var b = MergeSort(right_node,right_size,cmp);
+                
+                left_node = a.Item1;
+                left_size = a.Item2;
+                right_node = b.Item1;
+                right_size = b.Item2;
+
+                return Merge(left_node,left_size,right_node,right_size,cmp);
+            } 
+           protected static (LinkedListNode<T>,int) Merge<T>(LinkedListNode<T> left_node,
+                                         int left_size, 
+                                         LinkedListNode<T> right_node, 
+                                         int right_size,IComparer<T> cmp)
+            {
+                LinkedList<T> result = new LinkedList<T>();
+                
+                if(left_node!=null && right_node!=null & left_size>0 && right_size>0){
+                    while(left_size>0 || right_size>0){
+                        if(left_size>0 && right_size>0){
+                            if(cmp.Compare(left_node.Value,right_node.Value)>0){
+                                result.AddLast(left_node.Value);
+                                left_size--;
+                                left_node = left_node.Next;
+                            }
+                            else{
+                                result.AddLast(right_node.Value);
+                                right_size--;
+                                right_node = right_node.Next;
+                            }
+                            continue;
+                        }
+                        if(left_size>0){
+                            result.AddLast(left_node.Value);
+                            left_size--;
+                            left_node=left_node.Next;
+                            continue;
+                        }
+                        if(right_size>0){
+                            result.AddLast(right_node.Value);
+                            right_size--;
+                            right_node = right_node.Next;
+                            continue;
+                        }
+                    }
+                }
+                return (result.First,result.Count);
+            }
+            
+        ///<summary>
+        ///Process merge sort for list. How it sorting list depending on CompDelegate
+        ///</summary> 
+        public static LinkedList<T> Sort<T>(LinkedList<T> unsorted,CompareAdapter<T>.CompDelegate cmp){
+            
+            return MergeSort(unsorted.First,unsorted.Count,new CompareAdapter<T>(cmp)).Item1.List;
+        }
+
+    }
+}

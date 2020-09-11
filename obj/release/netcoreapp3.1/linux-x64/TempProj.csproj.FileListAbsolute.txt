@@ -1,0 +1,13 @@
+/media/vlad/Games/Database/Clients/Communicator/TempProj/bin/release/netcoreapp3.1/linux-x64/TempProj
+/media/vlad/Games/Database/Clients/Communicator/TempProj/bin/release/netcoreapp3.1/linux-x64/TempProj.deps.json
+/media/vlad/Games/Database/Clients/Communicator/TempProj/bin/release/netcoreapp3.1/linux-x64/TempProj.runtimeconfig.json
+/media/vlad/Games/Database/Clients/Communicator/TempProj/bin/release/netcoreapp3.1/linux-x64/TempProj.runtimeconfig.dev.json
+/media/vlad/Games/Database/Clients/Communicator/TempProj/bin/release/netcoreapp3.1/linux-x64/TempProj.dll
+/media/vlad/Games/Database/Clients/Communicator/TempProj/bin/release/netcoreapp3.1/linux-x64/TempProj.pdb
+/media/vlad/Games/Database/Clients/Communicator/TempProj/obj/release/netcoreapp3.1/linux-x64/TempProj.csprojAssemblyReference.cache
+/media/vlad/Games/Database/Clients/Communicator/TempProj/obj/release/netcoreapp3.1/linux-x64/TempProj.AssemblyInfoInputs.cache
+/media/vlad/Games/Database/Clients/Communicator/TempProj/obj/release/netcoreapp3.1/linux-x64/TempProj.AssemblyInfo.cs
+/media/vlad/Games/Database/Clients/Communicator/TempProj/obj/release/netcoreapp3.1/linux-x64/TempProj.csproj.CoreCompileInputs.cache
+/media/vlad/Games/Database/Clients/Communicator/TempProj/obj/release/netcoreapp3.1/linux-x64/TempProj.dll
+/media/vlad/Games/Database/Clients/Communicator/TempProj/obj/release/netcoreapp3.1/linux-x64/TempProj.pdb
+/media/vlad/Games/Database/Clients/Communicator/TempProj/obj/release/netcoreapp3.1/linux-x64/TempProj.genruntimeconfig.cache
