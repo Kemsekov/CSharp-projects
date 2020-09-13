@@ -1,11 +1,10 @@
-using Adapter;
 using System.Collections.Generic;
-
+using System;
 //In this tool i use CompareAdapter<T>, that allows me to compare types
 
 namespace SortLinkedList{
     class DoMergeSort{
-    protected static (LinkedListNode<T>,int) MergeSort<T>(LinkedListNode<T> left_node,int Count,IComparer<T> cmp){
+    protected static (LinkedListNode<T>,int) MergeSort<T>(LinkedListNode<T> left_node,int Count,Func<T,T,int> cmp){
 
                 if(Count<=1)
                 return (left_node,Count);
@@ -32,33 +31,33 @@ namespace SortLinkedList{
            protected static (LinkedListNode<T>,int) Merge<T>(LinkedListNode<T> left_node,
                                          int left_size, 
                                          LinkedListNode<T> right_node, 
-                                         int right_size,IComparer<T> cmp)
+                                         int right_size,Func<T,T,int> cmp)
             {
                 LinkedList<T> result = new LinkedList<T>();
                 
                 if(left_node!=null && right_node!=null & left_size>0 && right_size>0){
                     while(left_size>0 || right_size>0){
                         if(left_size>0 && right_size>0){
-                            if(cmp.Compare(left_node.Value,right_node.Value)>0){
-                                result.AddLast(left_node.Value);
+                            if(cmp(left_node.Value,right_node.Value)>0){
+                                result.AddLast((left_node));
                                 left_size--;
                                 left_node = left_node.Next;
                             }
                             else{
-                                result.AddLast(right_node.Value);
+                                result.AddLast(right_node);
                                 right_size--;
                                 right_node = right_node.Next;
                             }
                             continue;
                         }
                         if(left_size>0){
-                            result.AddLast(left_node.Value);
+                            result.AddLast(left_node);
                             left_size--;
                             left_node=left_node.Next;
                             continue;
                         }
                         if(right_size>0){
-                            result.AddLast(right_node.Value);
+                            result.AddLast(right_node);
                             right_size--;
                             right_node = right_node.Next;
                             continue;
@@ -71,9 +70,10 @@ namespace SortLinkedList{
         ///<summary>
         ///Process merge sort for list. How it sorting list depending on CompDelegate
         ///</summary> 
-        public static LinkedList<T> Sort<T>(LinkedList<T> unsorted,CompareAdapter<T>.CompDelegate cmp){
+        /// <param name="cmp"> should return int as result of comparing 2 objects of one type</param>
+        public static LinkedList<T> Sort<T>(LinkedList<T> unsorted,Func<T,T,int> cmp){
             
-            return MergeSort(unsorted.First,unsorted.Count,new CompareAdapter<T>(cmp)).Item1.List;
+            return MergeSort(unsorted.First,unsorted.Count,cmp).Item1.List;
         }
 
     }

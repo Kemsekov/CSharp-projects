@@ -6,21 +6,20 @@ using System.Diagnostics.CodeAnalysis;
 namespace Adapter
 {
     /// <summary>
-    /// Хороший пример адаптора. Он делегирует вызов делегата CompDelegate через интерфейс IComparer<typeparamref name="T"/>
+    /// Хороший пример адаптора. Он делегирует вызов делегата Func<T,T,int> cmp через интерфейс IComparer<typeparamref name="T"/>
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class CompareAdapter<T> : IComparer<T>
     {
         public int Number;
-        public delegate int CompDelegate(T a, T b);
-        CompDelegate comparator;
+        Func<T,T,int> comparator;
 
         private CompareAdapter()
         {
 
         }
 
-        public CompareAdapter(CompDelegate comparator)
+        public CompareAdapter(Func<T,T,int> comparator)
         {
             this.comparator += comparator;
         }

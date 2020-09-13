@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 
 namespace TemporaryProj.ChainOfResponsability{
-    abstract class Handler<T>{
+    public abstract class Handler<T>{
         ///<summary>
         ///if request was successfuly processed return true - else false
         ///</summary>
