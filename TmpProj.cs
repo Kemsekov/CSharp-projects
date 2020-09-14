@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using SortLinkedList;
+using TemporaryProj.ChainOfResponsability;
+using System.Linq;
+using TemporaryProj.Tests;
 
 namespace TemporaryProj
 {
@@ -10,18 +13,7 @@ namespace TemporaryProj
 
         static void Main(string[] args)
         {
-            
-            Random rand = new Random();
-            LinkedList<char> list = new LinkedList<char>();
-
-            for(int a = 0; a<11; a++)
-            list.AddLast(Convert.ToChar(rand.Next(0,100)));
-
-            var res = DoMergeSort.Sort(list,(char a, char b)=>b-a);
-
-            foreach(var a in res)
-            System.Console.WriteLine(Convert.ToInt32(a));
-            
+            Tests.tests.ChainOfResponsabilityTest();
         }
     }
 }

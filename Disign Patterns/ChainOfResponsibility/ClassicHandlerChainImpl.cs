@@ -1,9 +1,14 @@
 using System;
 using System.Threading;
+using System.Collections.Generic;
 
 namespace TemporaryProj.ChainOfResponsability{
-    public class ClassicHandlerChainImpl<T> : HandlerChainImpl<T>
+    public class ClassicHandlerChainImpl : HandlerChainImpl
     {
+        public ClassicHandlerChainImpl(LinkedList<Handler> list) : base(list)
+        {
+            
+        }
         public ClassicHandlerChainImpl() : base()
         {
             
@@ -14,14 +19,14 @@ namespace TemporaryProj.ChainOfResponsability{
             remove => notify-=value;
         }
 
-        public override void AddHandler(Handler<T> handler)
+        public override void AddHandler(Handler handler)
         {
             lock(list){
                 list.AddLast(handler);
             }
         }
 
-        public override void Process(T request)
+        public override void Process(object request)
         {
             Monitor.Enter(list);
             try{
@@ -37,7 +42,7 @@ namespace TemporaryProj.ChainOfResponsability{
             }
         }
 
-        public override bool RemoveHandler(Handler<T> handler)
+        public override bool RemoveHandler(Handler handler)
         {
             lock(list){
                 return list.Remove(handler);

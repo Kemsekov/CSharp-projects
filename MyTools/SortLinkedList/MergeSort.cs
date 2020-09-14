@@ -3,77 +3,74 @@ using System;
 //In this tool i use CompareAdapter<T>, that allows me to compare types
 
 namespace SortLinkedList{
-    class DoMergeSort{
-    protected static (LinkedListNode<T>,int) MergeSort<T>(LinkedListNode<T> left_node,int Count,Func<T,T,int> cmp){
+    class SortType{
+        protected static LinkedListNode<T> MergeSort<T>(LinkedListNode<T> list_first,int count,Func<T,T,int> cmp)
+        {   
+            if(list_first==null || cmp==null)
+            throw new NullReferenceException();
+            if(count<=1)
+            return list_first;
+            
+            var half = list_first;
 
-                if(Count<=1)
-                return (left_node,Count);
+            for(int i = count/2;i>0;i--){
+                half = half.Next;
+            }
 
-                int left_size = Count/2;
-                int right_size = Count-left_size;
+            var half1 = MergeSort(list_first,count/2,cmp);
+            var half2 = MergeSort(half,count-count/2,cmp);
 
-                LinkedListNode<T> right_node = left_node;
+            return Merge(half1,half2,count/2,count-count/2,cmp);
+        } 
+        protected static LinkedListNode<T> Merge<T>(LinkedListNode<T> list1_first, LinkedListNode<T> list2_first,int n1,int n2,Func<T,T,int> cmp){
+            if(list1_first == null || list2_first== null)
+            throw new NullReferenceException();
 
-                for(int co = right_size;co>1;co--){
-                    right_node = right_node.Next;
-                }
-                
-                var a = MergeSort(left_node,left_size,cmp);
-                var b = MergeSort(right_node,right_size,cmp);
-                
-                left_node = a.Item1;
-                left_size = a.Item2;
-                right_node = b.Item1;
-                right_size = b.Item2;
+            LinkedList<T> result = new LinkedList<T>();
 
-                return Merge(left_node,left_size,right_node,right_size,cmp);
-            } 
-           protected static (LinkedListNode<T>,int) Merge<T>(LinkedListNode<T> left_node,
-                                         int left_size, 
-                                         LinkedListNode<T> right_node, 
-                                         int right_size,Func<T,T,int> cmp)
-            {
-                LinkedList<T> result = new LinkedList<T>();
-                
-                if(left_node!=null && right_node!=null & left_size>0 && right_size>0){
-                    while(left_size>0 || right_size>0){
-                        if(left_size>0 && right_size>0){
-                            if(cmp(left_node.Value,right_node.Value)>0){
-                                result.AddLast((left_node));
-                                left_size--;
-                                left_node = left_node.Next;
-                            }
-                            else{
-                                result.AddLast(right_node);
-                                right_size--;
-                                right_node = right_node.Next;
-                            }
-                            continue;
-                        }
-                        if(left_size>0){
-                            result.AddLast(left_node);
-                            left_size--;
-                            left_node=left_node.Next;
-                            continue;
-                        }
-                        if(right_size>0){
-                            result.AddLast(right_node);
-                            right_size--;
-                            right_node = right_node.Next;
-                            continue;
-                        }
+            LinkedListNode<T> list1_current = list1_first;
+            LinkedListNode<T> list2_current = list2_first;
+
+            while(n1>0 || n2>0){
+                if(n1>0 && n2>0){
+                    if(cmp(list1_current.Value,list2_current.Value)>0){
+                        result.AddLast(list1_current.Value);
+                        list1_current = list1_current.Next;
+                        n1--;
+                        continue;
+                    }
+                    else{
+                        result.AddLast(list2_current.Value);
+                        list2_current = list2_current.Next;
+                        n2--;
+                        continue;
                     }
                 }
-                return (result.First,result.Count);
+                if(n1>0){
+                    result.AddLast(list1_current.Value);
+                    list1_current = list1_current.Next;
+                    n1--;
+                    continue;
+                } 
+                if(n2>0){
+                    result.AddLast(list2_current.Value);
+                    list2_current = list2_current.Next;
+                    n2--;
+                }
+                
             }
+
             
+            return result.First;
+        }
+
         ///<summary>
         ///Process merge sort for list. How it sorting list depending on CompDelegate
         ///</summary> 
         /// <param name="cmp"> should return int as result of comparing 2 objects of one type</param>
         public static LinkedList<T> Sort<T>(LinkedList<T> unsorted,Func<T,T,int> cmp){
             
-            return MergeSort(unsorted.First,unsorted.Count,cmp).Item1.List;
+            return MergeSort(unsorted.First,unsorted.Count,cmp).List;
         }
 
     }

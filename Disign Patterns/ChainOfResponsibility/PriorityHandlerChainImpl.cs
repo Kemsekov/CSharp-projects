@@ -7,13 +7,18 @@ namespace TemporaryProj.ChainOfResponsability{
     ///<summary>
     ///In here implemented Chain of responsibility disign pattern but with dynamic changing priority list
     ///</summary>
-    public class PriorityHandlerChainImpl<T> : HandlerChainImpl<T>{
+    public class PriorityHandlerChainImpl : HandlerChainImpl{
         IfRequestProcessed notify;
         ///<summary>
         ///Define how often list of Handlers will sort by using Optimize() method
         ///</summary>
         public int FrequencyOfOptimize {get; protected set;}
         int countOfCallingProcessMethod = 0;
+
+        public PriorityHandlerChainImpl(LinkedList<Handler> list, int frequencyOfOptimize = 10) : base(list)
+        {
+            FrequencyOfOptimize = frequencyOfOptimize;
+        }
         public PriorityHandlerChainImpl(int frequencyOfOptimize = 10) : base()
         {
             FrequencyOfOptimize = frequencyOfOptimize;
@@ -26,20 +31,19 @@ namespace TemporaryProj.ChainOfResponsability{
             notify-=value;
         }
         }
-        public override void AddHandler(Handler<T> handler){
+        public override void AddHandler(Handler handler){
             lock(list){
             list.AddLast(handler);
             }
         }
-        public override bool RemoveHandler(Handler<T> handler){
+        public override bool RemoveHandler(Handler handler){
             lock(list){
             return list.Remove(handler);
             }
         }
-        public override void Process(T request){
-            countOfCallingProcessMethod++;
+        public override void Process(object request){
             ProcessNode(request);
-            if(countOfCallingProcessMethod==FrequencyOfOptimize){
+            if(++countOfCallingProcessMethod==FrequencyOfOptimize){
             Optimize();
             countOfCallingProcessMethod = 0;
             }
@@ -54,13 +58,15 @@ namespace TemporaryProj.ChainOfResponsability{
         ///The more often some Handler successfully process the request the more its priority is
         ///</summary>
         protected void Optimize(){
+            LinkedList<Handler> buff;
             lock(list){
             //change sort method is needed!
-            DoMergeSort.Sort(list,(Handler<T> t1, Handler<T> t2)=>
+            buff = SortType.Sort(list,(Handler t1, Handler t2)=>
             t1.Priority-t2.Priority);
             }   
+            list = buff;
         }
-        protected void ProcessNode(T request){
+        protected void ProcessNode(object request){
             Monitor.Enter(list);
             try{
                 foreach(var a in list)

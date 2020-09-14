@@ -4,14 +4,40 @@ using SortLinkedList;
 using System.Threading;
 
 namespace TemporaryProj.ChainOfResponsability{
-    class HandlerChain<T>
+    
+    class HandlerChain : HandlerChainImpl
     {
-        protected HandlerChainImpl<T> impl;
-        public HandlerChain(HandlerChainImpl<T> impl)
+        protected HandlerChainImpl impl;
+        public HandlerChain(HandlerChainImpl impl)
         {
-            if(impl==null) throw new NullReferenceException();
+            if(impl==null) 
+            throw new NullReferenceException();
+
             this.impl = impl;
         }
-        
+
+        public override event IfRequestProcessed NotifyIfSuccess
+        {
+            add=>impl.NotifyIfSuccess += value;
+            remove=>impl.NotifyIfSuccess -= value;
+        }
+
+
+        public override void AddHandler(Handler handler)
+        {
+            impl.AddHandler(handler);
+        }
+
+
+        public override void Process(object request)
+        {
+            impl.Process(request);
+        }
+
+
+        public override bool RemoveHandler(Handler handler)
+        {
+            return impl.RemoveHandler(handler);
+        }
     }
 }
