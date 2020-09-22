@@ -4,7 +4,9 @@ using SortLinkedList;
 using TemporaryProj.ChainOfResponsability;
 using System.Linq;
 using TemporaryProj.Tests;
-
+using ManagedBass;
+using System.IO;
+using System.Threading;
 namespace TemporaryProj
 {
         
@@ -13,7 +15,18 @@ namespace TemporaryProj
 
         static void Main(string[] args)
         {
-            Tests.tests.ChainOfResponsabilityTest();
+            Bass.Init();
+            int handle = Bass.CreateStream("Assets/Music/Goose.mp3");
+            if(!Bass.ChannelPlay(handle))
+            System.Console.WriteLine(Bass.LastError);
+
+            Thread.Sleep(100);
+            while(Bass.ChannelIsActive(handle)!=PlaybackState.Stopped)
+            Thread.Sleep(100);
+
+            Bass.ChannelStop(handle);
+            Bass.MusicFree(handle);
+            Bass.Free();
         }
     }
 }
