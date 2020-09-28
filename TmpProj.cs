@@ -7,26 +7,31 @@ using TemporaryProj.Tests;
 using ManagedBass;
 using System.IO;
 using System.Threading;
+using System.Text;
+using System.Text.RegularExpressions;
 namespace TemporaryProj
 {
         
         class TmpProj
         {
-
         static void Main(string[] args)
-        {
-            Bass.Init();
-            int handle = Bass.CreateStream("Assets/Music/Goose.mp3");
-            if(!Bass.ChannelPlay(handle))
-            System.Console.WriteLine(Bass.LastError);
+        {//(?<=\\[Source\\])\n.*?(?=\\[|$)
+            var source = new Regex("(?<=\\[Source\\])\n.*?(?=\\[|$)",RegexOptions.Singleline);
+            var name = new Regex("(?<=\\[Name\\])\n.*?(?=\\[|$)",RegexOptions.Singleline);
+            
+            var fl = File.Open("results.txt",FileMode.Open);
+            byte[] buf = new byte[fl.Length];
+            fl.Read(buf,0,(int)fl.Length);
+            var res = Encoding.UTF8.GetString(buf,0,buf.Length);
 
-            Thread.Sleep(100);
-            while(Bass.ChannelIsActive(handle)!=PlaybackState.Stopped)
-            Thread.Sleep(100);
+            var buff = source.Match(res).Value.Trim('\n');
 
-            Bass.ChannelStop(handle);
-            Bass.MusicFree(handle);
-            Bass.Free();
+            Console.WriteLine(buff);
+            System.Console.WriteLine();
+
+            buff = name.Match(res).Value.Trim('\n');
+
+            Console.WriteLine(buff);
         }
     }
 }

@@ -2,6 +2,7 @@ using System;
 using SortLinkedList;
 using System.Collections.Generic;
 using System.Threading;
+using System.Linq;
 
 namespace TemporaryProj.ChainOfResponsability{
     ///<summary>
@@ -58,13 +59,18 @@ namespace TemporaryProj.ChainOfResponsability{
         ///The more often some Handler successfully process the request the more its priority is
         ///</summary>
         protected void Optimize(){
-            LinkedList<Handler> buff;
-            lock(list){
-            //change sort method is needed!
-            buff = SortType.Sort(list,(Handler t1, Handler t2)=>
-            t1.Priority-t2.Priority);
-            }   
-            list = buff;
+
+            lock(list)
+            {
+                var buf = from num in list
+                        orderby num.Priority
+                        select num;
+                list = new LinkedList<Handler>(buf);
+            }
+        }
+        protected void Swap(LinkedListNode<Handler> node1, LinkedListNode<Handler> node2){
+            list.AddBefore(node1,new LinkedListNode<Handler>(node2.Value));
+            list.Remove(node2);
         }
         protected void ProcessNode(object request){
             Monitor.Enter(list);

@@ -65,9 +65,9 @@ namespace SortLinkedList{
         }
 
         ///<summary>
-        ///Process merge sort for list. How it sorting list depending on CompDelegate
+        ///Process merge sort for list. How it sorting list depending on comparator (cmp)
         ///</summary> 
-        /// <param name="cmp"> should return int as result of comparing 2 objects of one type</param>
+        /// <param name="cmp"> should return int as result of comparing two objects</param>
         public static LinkedList<T> Sort<T>(LinkedList<T> unsorted,Func<T,T,int> cmp){
             
             return MergeSort(unsorted.First,unsorted.Count,cmp).List;
