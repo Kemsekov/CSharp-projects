@@ -68,10 +68,6 @@ namespace TemporaryProj.ChainOfResponsability{
                 list = new LinkedList<Handler>(buf);
             }
         }
-        protected void Swap(LinkedListNode<Handler> node1, LinkedListNode<Handler> node2){
-            list.AddBefore(node1,new LinkedListNode<Handler>(node2.Value));
-            list.Remove(node2);
-        }
         protected void ProcessNode(object request){
             Monitor.Enter(list);
             try{

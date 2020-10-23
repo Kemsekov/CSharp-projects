@@ -11,6 +11,12 @@ namespace TemporaryProj.Composite
         {
             action(this);
         }
+
+        public override IEnumerator<Component> GetEnumerator()
+        {
+            yield return this;
+        }
+
         public Data(string name) : base(name)
         {
             isBranch = false;

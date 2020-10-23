@@ -35,5 +35,17 @@ namespace TemporaryProj.Composite
         {
             return childs[index] as Component;
         }
+
+        public override IEnumerator<Component>  GetEnumerator()
+        {
+            //Console.WriteLine(name);
+            foreach (Component a in childs)
+                foreach(var b in a)
+                    yield return b;
+        }
+
+        
+
+
     }
 }

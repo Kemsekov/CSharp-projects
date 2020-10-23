@@ -15,6 +15,7 @@ namespace TemporaryProj.Composite
         /// </summary>
         /// <param name="action">Сюда в Component попадают листы дерева</param>
         public abstract void Operation(Action<Component> action);
+        public abstract IEnumerator<Component> GetEnumerator();
         public string name { get; protected set; }
         public bool isBranch { get; protected set; }
         public Component(string name)
