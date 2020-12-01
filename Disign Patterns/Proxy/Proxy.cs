@@ -2,6 +2,7 @@ using System;
 using System.Net.Sockets;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 
 /*
 Proxy призван имитировать поведение объекта.. Я пока не разичаю его от декоратора, 
@@ -10,7 +11,7 @@ Proxy призван имитировать поведение объекта.. 
 
 namespace TemporaryProj.Proxy{
     interface IAcessor{
-        public string GetName();
+        string GetName();
     }
     class CurrentMachine : IAcessor{
         public string GetName(){
@@ -18,9 +19,9 @@ namespace TemporaryProj.Proxy{
         }
     }
 
-    class RemoteMachine : IAcessor{
+    class RemoteMachine : IAcessor, IDisposable{
         public Socket socket;
-        Socket RemoteSocket;
+        public Socket RemoteSocket;
         IPEndPoint EndLocal;
         IPEndPoint EndRemote;
         public RemoteMachine(string ip = "",int port = 0)
@@ -47,9 +48,18 @@ namespace TemporaryProj.Proxy{
             catch(FormatException ex){
                 System.Console.WriteLine("From RemoteMachine - FormatException\n",ip," must be IPv4");
             }
-            
-            
         }
+
+        public void Dispose()
+        {
+            socket.Disconnect(true);
+            socket.Dispose();
+            if(RemoteSocket!=null){
+            RemoteSocket.Disconnect(true);
+            RemoteSocket.Dispose();
+            }
+        }
+
         public string GetName(){
 
             StringBuilder builder = new StringBuilder();
@@ -63,23 +73,21 @@ namespace TemporaryProj.Proxy{
             //We say to socket that we can queue only 5 requests for connection at the same time
             //this method will freeze program until someone try to connect to us
             socket.Listen(5);
-
             //we accept everything and everyone that try to connect to us
             RemoteSocket = socket.Accept();
             
             //across RemoteSocket we can recive and send data from and to remote device
 
-            var count = RemoteSocket.Receive(buff);
             string str="";
 
             //This will loop until command stop is send to us
             //why "stopo" in if statement? IDK but every "stop" message always transform in "stopo"
             while(true){
-                
+                RemoteSocket.Receive(buff);
                 str = new string(Encoding.UTF8.GetChars(buff)).Trim('\0');
-                if(str=="stopo") break;
                 builder.Append(str);
-                count = RemoteSocket.Receive(buff);
+                if(RemoteSocket.Available==0)
+                break;
             }
 
             return builder.ToString().Trim();
