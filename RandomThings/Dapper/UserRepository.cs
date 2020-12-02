@@ -40,6 +40,7 @@ namespace CSharp_projects.RandomThings.Dapper
                 db.Execute(sqlQuery);
             }
         }
+        
         public async Task DeleteAsync(int id){
             using (IDbConnection db = new MySqlConnection(connection_string))
             {

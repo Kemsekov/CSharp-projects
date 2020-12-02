@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace CSharp_projects.RandomThings.Dapper
 {
     public class User
