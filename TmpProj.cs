@@ -24,13 +24,8 @@ namespace TemporaryProj
     static void Main(string[] args)
     {
         string cs = @"Server=localhost;Database=UsersDB;Uid=vlad1;Pwd=vfu149vv.;";
-        
-        var rep = new MySqlRepository<User>(cs,"USERS");
-        rep.Create(new User{Name="Volodia",Number="_234412",Age=31});
-        //db.Execute("CREATE TABLE USER_1(FriendsID INT NOT NULL PRIMARY KEY, Status TEXT);");
-
-        //var repository = new MySqlRepository<User>("");
-        
+        var rep = new Repository<User,MySqlConnection>(cs,"USERS");
+        rep.Create(new User{Name="Hoho",Number="+542",Age=15});
     }
     }
 }

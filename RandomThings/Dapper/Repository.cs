@@ -13,14 +13,14 @@ using System.Runtime.Caching;
 
 namespace CSharp_projects.RandomThings.Dapper
 {
-    public class MySqlRepository<Entity> : IRepository<Entity>
+    public class Repository<Entity,DbConnection> : IRepository<Entity> where DbConnection : IDbConnection,new()
     {
         Type type = typeof(Entity);
         string connection_string = null;
         PropertyInfo IDProperty = null;
         PropertyInfo[] Properties = null;
         public string Table{get;set;}
-        public MySqlRepository(string connection_string,string table = null)
+        public Repository(string connection_string,string table = null)
         {
             Table = table;
             if(type.GetRuntimeProperty($"{type.Name}ID")!=null)
@@ -35,7 +35,9 @@ namespace CSharp_projects.RandomThings.Dapper
         }
         public void Create(Entity entity,string tablename = null)
         {
-            using IDbConnection db = new MySqlConnection(connection_string);
+            using IDbConnection db = new DbConnection();
+            db.ConnectionString=connection_string;
+
             using var cache = MemoryCache.Default;
 
             string tableName = GetTableNameOrThrowIfBothNull(tablename,Table);
@@ -72,7 +74,9 @@ namespace CSharp_projects.RandomThings.Dapper
 
         public async Task CreateAsync(Entity entity,string tablename = null)
         {
-            using IDbConnection db = new MySqlConnection(connection_string);
+            using IDbConnection db = new DbConnection();
+            db.ConnectionString=connection_string;
+
             using var cache = MemoryCache.Default;
 
             string sqlQuery = null;
@@ -106,7 +110,8 @@ namespace CSharp_projects.RandomThings.Dapper
 
         public void Delete(int id, string tablename = null)
         {
-            using IDbConnection db = new MySqlConnection(connection_string);
+            using IDbConnection db = new DbConnection();
+            db.ConnectionString=connection_string;
 
             string tableName = GetTableNameOrThrowIfBothNull(tablename,Table);
 
@@ -118,7 +123,8 @@ namespace CSharp_projects.RandomThings.Dapper
 
         public async Task DeleteAsync(int id, string tablename = null)
         {
-            using IDbConnection db = new MySqlConnection(connection_string);
+            using IDbConnection db = new DbConnection();
+            db.ConnectionString=connection_string;
 
             string tableName = GetTableNameOrThrowIfBothNull(tablename,Table);
 
@@ -131,43 +137,50 @@ namespace CSharp_projects.RandomThings.Dapper
         {
             string tableName = GetTableNameOrThrowIfBothNull(tablename,Table);
 
-            using (IDbConnection db = new MySqlConnection(connection_string))
-            {
-                return db.Query<Entity>($"SELECT * FROM {tableName} WHERE {IDProperty.Name}={id}").FirstOrDefault();
-            }
+            using IDbConnection db = new DbConnection();
+            db.ConnectionString=connection_string;
+
+            return db.Query<Entity>($"SELECT * FROM {tableName} WHERE {IDProperty.Name}={id}").FirstOrDefault();
+
         }
 
         public async Task<Entity> GetAsync(int id, string tablename = null)
         {
             string tableName = GetTableNameOrThrowIfBothNull(tablename,Table);
 
-            using (IDbConnection db = new MySqlConnection(connection_string))
-            {
-                return (await db.QueryAsync<Entity>($"SELECT * FROM {tableName} WHERE {IDProperty.Name}={id}")).FirstOrDefault();
-            }
+            using IDbConnection db = new DbConnection();
+            db.ConnectionString=connection_string;
+
+            return (await db.QueryAsync<Entity>($"SELECT * FROM {tableName} WHERE {IDProperty.Name}={id}")).FirstOrDefault();
+
         }
 
         public async Task<List<Entity>> GetEntitesAsync(string tablename = null)
         {
             string tableName = GetTableNameOrThrowIfBothNull(tablename,Table);
-            using (IDbConnection db = new MySqlConnection(connection_string))
-            {
-                return (await db.QueryAsync<Entity>($"SELECT * FROM {tableName}")).ToList();
-            }
+
+            using IDbConnection db = new DbConnection();
+            db.ConnectionString=connection_string;
+
+            return (await db.QueryAsync<Entity>($"SELECT * FROM {tableName}")).ToList();
+
         }
 
         public List<Entity> GetEntities(string tablename = null)
         {
             string tableName = GetTableNameOrThrowIfBothNull(tablename,Table);
-            using (IDbConnection db = new MySqlConnection(connection_string))
-            {
-                return db.Query<Entity>($"SELECT * FROM {tableName}").ToList();
-            }
+            using IDbConnection db = new DbConnection();
+            db.ConnectionString=connection_string;
+
+            return db.Query<Entity>($"SELECT * FROM {tableName}").ToList();
+
         }
 
         public void Update(Entity entity, string tablename = null)
         {
-            using IDbConnection db = new MySqlConnection(connection_string);
+            using IDbConnection db = new DbConnection();
+            db.ConnectionString=connection_string;
+            
             using var cache = MemoryCache.Default;
 
             string sqlQuery = null;
@@ -198,7 +211,9 @@ namespace CSharp_projects.RandomThings.Dapper
 
         public async Task UpdateAsync(Entity entity, string tablename = null)
         {
-            using IDbConnection db = new MySqlConnection(connection_string);
+            using IDbConnection db = new DbConnection();
+            db.ConnectionString=connection_string;
+
             using var cache = MemoryCache.Default;
 
             string sqlQuery = null;
@@ -230,5 +245,30 @@ namespace CSharp_projects.RandomThings.Dapper
             return t2;
             else throw new Exception($"Table value is null!");
         }
+
+        public List<Entity> Query(string sqlQuery)
+        {
+            using IDbConnection db = new DbConnection();
+            db.ConnectionString=connection_string;
+
+            return db.Query<Entity>(sqlQuery).ToList();
+        }
+        //<summary>
+        //Process sqlQuery string directly in database. May be used to create tables, join statements, where statements, etc.. 
+        //<summary>
+        public async Task<List<Entity>> QueryAsync(string sqlQuery){
+            using IDbConnection db = new DbConnection();
+            db.ConnectionString=connection_string;
+
+            return (await db.QueryAsync<Entity>(sqlQuery)).ToList();
+        }
     }
 }
+
+        //string cs = @"Server=localhost;Database=UsersDB;Uid=vlad1;Pwd=vfu149vv.;";
+        //
+        //var rep = new MySqlRepository<User>(cs,"USERS");
+        //var task = rep.QueryAsync("SELECT * FROM USERS WHERE Name=\"Ira\"");
+        //task.Wait();
+        //var res = task.Result;
+        //System.Console.WriteLine(res.FirstOrDefault().Number);

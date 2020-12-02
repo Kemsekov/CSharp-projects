@@ -15,5 +15,7 @@ namespace CSharp_projects.RandomThings.Dapper
         Task<List<Entity>> GetEntitesAsync(string tablename = null);
         void Update(Entity entity,string tablename = null);
         Task UpdateAsync(Entity entity,string tablename = null);
+        List<Entity> Query(string sqlQuery);
+        Task<List<Entity>> QueryAsync(string sqlQuery);
     }
 }
