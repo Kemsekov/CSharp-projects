@@ -9,62 +9,104 @@ using MySql.Data.MySqlClient;
 using Dapper;
 using System.Text;
 using System.Runtime.Caching;
+using System.ComponentModel.DataAnnotations;
 
-namespace CSharp_projects.RandomThings.Dapper
+namespace ASP.NET_OR_PAIN_IN_MY_HEAD.Database
 {
     public class Repository<Entity,DbConnection> : IRepository<Entity>,IDisposable where DbConnection : class,IDbConnection,new()
     {
-        IDbConnection db = null;
-        bool Disposed = false;
-        readonly Type type = typeof(Entity);
-        string connection_string = null;
-        PropertyInfo IDProperty = null;
-        PropertyInfo[] Properties = null;
+        public IDbConnection db = null;
+        protected bool Disposed = false;
+        protected readonly Type type = typeof(Entity);
+        protected string[] Properties_str = null;
+        protected Dictionary<string, PropertyInfo> Properties = null;
         public string Table{get;set;}
 
-        public Repository(string connection_string,string table = null)
+        private Repository(){}
+        public Repository(string connection_string, string table,bool createTableIfNotExist = true)
         {
             Table = table;
-            if(type.GetRuntimeProperty($"{type.Name}ID")!=null)
-                IDProperty=type.GetRuntimeProperty($"{type.Name}ID");
-            else if(type.GetRuntimeProperty("ID")!=null)
-                IDProperty=type.GetRuntimeProperty("ID");
-                else 
-                throw new Exception($"There is no public \"{type.Name}ID\" or \"ID\" property in {type.FullName}");
-            
-            Properties = type.GetRuntimeProperties().ToArray();
-            this.connection_string = connection_string;   
+            if(type.GetRuntimeProperty($"ID")==null)
+                throw new Exception($"There is no public \"ID\" property in {type.FullName}");
+            Properties_str = (from el in type.GetRuntimeProperties()
+                         select el.Name).ToArray<string>();
+            Properties = typeof(Entity).GetProperties().ToDictionary(info=>info.Name,info=>info);
             db = new DbConnection();
             db.ConnectionString = connection_string;
+            if(createTableIfNotExist)
+                CreateTableIfNotExists();
         }
-        public void Create(Entity entity,string tablename = null)
+        public Repository(DbConnection db,string table = null,bool createTableIfNotExist = true){
+            Table = table;
+            if(type.GetRuntimeProperty($"ID")==null)
+                throw new Exception($"There is no public \"ID\" property in {type.FullName}");
+            Properties_str = (from el in type.GetRuntimeProperties()
+                         select el.Name).ToArray<string>();
+            Properties = typeof(Entity).GetProperties().ToDictionary(info=>info.Name,info=>info);
+            this.db = db;
+            Disposed = true;
+            if(createTableIfNotExist)
+                CreateTableIfNotExists();
+        }
+        protected virtual void CreateTableIfNotExists(){
+            Func<PropertyInfo,string> ChooseDbTypeAndConstraints = (PropertyInfo t) =>{
+                
+                var attrib = t.GetCustomAttribute(typeof(DataTypeAttribute),true) as DataTypeAttribute;
+
+                if(attrib!=null){
+                    return attrib.CustomDataType;
+                }
+
+                switch(t.PropertyType.Name.ToUpper()){
+                    case "STRING" :
+                        return "TEXT";
+                    case "INT" or "INT32":
+                        return "INT";
+                    case "BYTE[]":
+                        return "BLOB";
+                    case "DATETIME":
+                        return "DATETIME";
+                    case "FLOAT":
+                        return "FLOAT(32)";
+                    case "DOUBLE":
+                        return "FLOAT(64)";
+                }
+                
+                return "";
+            };
+
+            var Props = type.GetProperties();
+            var builder = new StringBuilder($"CREATE TABLE IF NOT EXISTS {Table} (");
+            foreach(var a in type.GetProperties())
+            builder.Append($" {a.Name} {ChooseDbTypeAndConstraints(a)},");
+
+            builder.Remove(builder.Length-1,1);
+            builder.Append(")");
+            db.Execute(builder.ToString());
+        }
+        public virtual void Create(Entity entity)
         {
             var cache = MemoryCache.Default;
             
-            string tableName = GetOrThrowIfBothNull(tablename,Table,"Table value is null!");
-
             string sqlQuery = null;
-            string chache_name = $"{type.Name}_{tableName}_Create";
+            string chache_name = $"{type.Name}{Table}Create";
 
             lock(type){
                 if(cache.Contains(chache_name)){
                     sqlQuery = cache.Get(chache_name) as string;
                 }
                 else{
-                    var builder = new StringBuilder($"INSERT INTO {tableName} (");
-                    foreach(var a in Properties){
-                        builder.Append($"{a.Name}, ");
-                    }
-                    builder.Remove(builder.Length-2,2);
+                    var builder = new StringBuilder($"INSERT INTO {Table} (");
+
+                    builder.Append(string.Join(", ",Properties_str));
 
                     builder.Append(") VALUES (");
 
-                    foreach(var a in Properties){
-                        builder.Append($"@{a.Name}, ");
-                    }
-                    builder.Remove(builder.Length-2,2);
-                    builder.Append(')');
+                    builder.Append(" @");
+                    builder.Append(string.Join(", @",Properties_str));
 
+                    builder.Append(')');
+                    
                     sqlQuery = builder.ToString();
                     
                     cache.Add(chache_name,sqlQuery,DateTime.Now.AddMinutes(5));
@@ -75,72 +117,65 @@ namespace CSharp_projects.RandomThings.Dapper
             db.Execute(sqlQuery, entity);
         }
 
-        public async Task CreateAsync(Entity entity,string tablename = null)
+        public virtual async Task CreateAsync(Entity entity)
         {
-            await Task.Run(()=>Create(entity,tablename));
+            await Task.Run(()=>Create(entity));
         }
 
-        public void Delete(int id, string tablename = null)
+        public virtual void Delete(int id)
         {
 
-            string tableName = GetOrThrowIfBothNull(tablename,Table,"Table value is null!");
-
-            var sqlQuery = $"DELETE FROM {tableName} WHERE {IDProperty.Name} = {id}";
+            var sqlQuery = $"DELETE FROM {Table} WHERE ID = {id}";
 
             db.Execute(sqlQuery);
             
         }
 
-        public async Task DeleteAsync(int id, string tablename = null)
+        public virtual async Task DeleteAsync(int id)
         {
-            await Task.Run(()=>Delete(id,tablename));
+            await Task.Run(()=>Delete(id));
         }
 
-        public Entity Get(int id, string tablename = null)
+        public virtual Entity Get(int id)
         {
-            string tableName = GetOrThrowIfBothNull(tablename,Table,"Table value is null!");
-
-            return db.Query<Entity>($"SELECT * FROM {tableName} WHERE {IDProperty.Name}={id}").FirstOrDefault();
+            return db.Query<Entity>($"SELECT * FROM {Table} WHERE ID={id}").FirstOrDefault();
         }
 
-        public async Task<Entity> GetAsync(int id, string tablename = null)
+        public virtual async Task<Entity> GetAsync(int id)
         {
-            return await Task.Run(()=>Get(id,tablename));
+            return await Task.Run(()=>Get(id));
         }
 
-        public async Task<List<Entity>> GetEntitesAsync(string tablename = null)
+        public virtual async Task<List<Entity>> GetEntitesAsync()
         {
-            return await Task.Run(()=>GetEntities(tablename));
+            return await Task.Run(()=>GetEntities());
         }
 
-        public List<Entity> GetEntities(string tablename = null)
+        public virtual List<Entity> GetEntities()
         {
             
-            string tableName = GetOrThrowIfBothNull(tablename,Table,"Table value is null!");
-
-            return db.Query<Entity>($"SELECT * FROM {tableName}").ToList();
+            return db.Query<Entity>($"SELECT * FROM {Table}").ToList();
 
         }
 
-        public void Update(Entity entity, string tablename = null)
+        public virtual void Update(Entity entity)
         {
 
             using var cache = MemoryCache.Default;
 
             string sqlQuery = null;
-            string tableName = GetOrThrowIfBothNull(tablename,Table,"Table value is null!");
-            string chache_name = $"{type.Name}_{tableName}_Create";
+            string chache_name = $"{type.Name}_{Table}_Create";
             
             lock(type)
             if(cache.Contains(chache_name))
                 sqlQuery = cache.Get(chache_name) as string;
             else{
-                var builder = new StringBuilder($"UPDATE {tableName} SET ");
-                foreach(var a in Properties){
-                    builder.Append($"{a.Name} = @{a.Name} ");
+                var builder = new StringBuilder($"UPDATE {Table} SET ");
+                foreach(var a in Properties_str){
+                    builder.Append($"{a} = @{a}, ");
                 }
-
-                builder.Append($"WHERE {IDProperty.Name} = @{IDProperty.Name}");
+                builder.Remove(builder.Length-2,2);
+                builder.Append($" WHERE ID = @ID");
 
                 sqlQuery = builder.ToString();
 
@@ -151,31 +186,13 @@ namespace CSharp_projects.RandomThings.Dapper
 
         }
 
-        public async Task UpdateAsync(Entity entity, string tablename = null)
+        public virtual async Task UpdateAsync(Entity entity)
         {
-            await Task.Run(()=>Update(entity,tablename));
+            
+            await Task.Run(()=>Update(entity));
         }
 
-        protected T GetOrThrowIfBothNull<T>(T t1, T t2, string exceotion_msg){
-            if(t1!=null)
-            return t1;
-            else if(t2!=null)
-            return t2;
-            else throw new Exception(exceotion_msg);
-        }
-
-        public IEnumerable<Entity> Query(string sqlQuery)
-        {
-            return db.Query<Entity>(sqlQuery);
-        }
-        //<summary>
-        //Process sqlQuery string directly in database. May be used to create tables, join statements, where statements, etc.. 
-        //<summary>
-        public async Task<IEnumerable<Entity>> QueryAsync(string sqlQuery){
-            return await db.QueryAsync<Entity>(sqlQuery);
-        }
-
-        public void Dispose()
+        public virtual void Dispose()
         {
             if(!Disposed){
                 db.Dispose();
